@@ -1,0 +1,21 @@
+[package]
+name = "rkh-chk"
+authors = ["Raif S. Naffah <raif@mailbox.org>"]
+version = "0.1.0"
+edition = "2024"
+description = "Command line companion tool to Rootkit Hunter"
+repository = "https://github.com/raif-s-naffah/rkh-chk"
+license = "GPL-3.0-or-later"
+keywords = ["rkhunter", "tui"]
+categories = ["command-line-utilities", "security"]
+
+[dependencies]
+dotenvy = "0.15.7"
+log = "0.4.29"
+env_logger = "0.11.10"
+jiff = "0.2.24"
+
+[profile.release]
+strip = true  # Automatically strip symbols from the binary.
+lto = true    # Enable link-time optimization
+# codegen-units = 1  # Number of parallel codegen units
