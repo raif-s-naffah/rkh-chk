@@ -29,15 +29,23 @@ The `Cargo.toml` file already contains the necessary incantations to minimize th
 Assuming you will be using `upx`, and put the resulting executable somewhere accessible from your `$PATH` (for example `~/bin`), then when you're ready do...
 
 ```bash
-$ cargo b↵
-$ cargo clippy↵
 $ cargo b -r↵
 $ rm ~/bin/rkh-chk↵
 $ upx --best --lzma -o ~/bin/rkh-chk target/release/rkh-chk↵
 ```
 
 ## Using
-To use this tool for dealing with the last run of **RKHunter**, do `$ sudo ~/bin/rkh-chk↵`. If you need to address the penultimate one, do `$ sudo ~/bin/rkh-chk last-1↵`, etc... Remember though that _changed files_, unless and until addressed, either individually or globally, will keep causing warnings.  In other words, in practice you'll rarely need to address other than the last run.
+To use this tool for dealing with the last run of **RKHunter**, do
+
+```bash
+$ sudo ~/bin/rkh-chk↵
+```
+If you need to address the penultimate one, do
+
+```bash
+$ sudo ~/bin/rkh-chk last-1↵
+```
+etc... Remember though that _changed files_, unless and until addressed, either individually or globally, will keep causing warnings.  In other words, in practice you'll rarely need to address other than the last run.
 
 
 ## ChangeLog

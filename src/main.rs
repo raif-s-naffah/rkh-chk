@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+use env_logger::WriteStyle::Never;
 use jiff::Timestamp;
-use log::{debug, error, info, trace, warn};
+use log::{error, info};
 use rkh_chk::{
     config::config,
     error::MyError,
@@ -12,16 +13,14 @@ use rkh_chk::{
 };
 use std::{env, io::Write, time::Instant};
 
-const MY_ENV: &str = "/etc/.env";
-
 /// IMPORTANT: MUST be run w/ `sudo`...
 fn do_main() -> Result<(), MyError> {
     // 1. find offset of scan section to scrutinize...
     let offset = find_offset(env::args().collect())?;
     if offset == 0 {
-        println!("Will scrutinize last scan section...");
+        println!("→ Will scrutinize last scan section...");
     } else {
-        println!("Will scrutinize scan section at offset -{}...", offset);
+        println!("→ Will scrutinize scan section at offset -{}...", offset);
     }
 
     // 2. parse the target scan section and return all changed files within
@@ -39,17 +38,19 @@ fn do_main() -> Result<(), MyError> {
     // 3. find RPMs providing those changed files.  remember that 1 RPM may be
     // providing more than one of those changed files...
     let outcome = find_rpms(changed_files)?;
-    info!(
-        "Found {} file(s) unclaimed by any installed RPM...",
-        outcome.unclaimed_count
-    );
 
     // 4. if at least one changed file was found to be unclaimed, invoke
     // `rkhunter --update --propupd` to ensure we're back in-sync w/ the master
     // database.  otherwise, invoke `rkhunter --propupd` for each changed RPM.
-    if outcome.unclaimed_count != 0 && yes_no("Invoke rkhunter --update --propupd") {
-        rkhunter_update()?;
-        return Ok(());
+    if !outcome.unclaimed_files.is_empty() {
+        info!(
+            "Found unclaimed changed files: {:?}",
+            outcome.unclaimed_files
+        );
+        if yes_no("Invoke rkhunter --update --propupd") {
+            rkhunter_update()?;
+            return Ok(());
+        }
     }
 
     // 5. if we found no installed RPMs claiming _changed files_ or we did but
@@ -80,7 +81,7 @@ fn do_main() -> Result<(), MyError> {
 
 /// Setup logging from environment variables, including the `RUST_LOG` one
 /// we included in our [MyConfig] singleton.
-/// 
+///
 /// IMPORTANT - we also use a format for timestamps that shows (and uses) a
 /// timezone which is the one detected as used by the system or the one
 /// specified by the User in their `.env` configuration properties file.
@@ -96,12 +97,13 @@ fn setup_logging() -> Result<(), MyError> {
             let formatted = zoned.strftime("%Y-%m-%d %H:%M:%S %Z").to_string();
             writeln!(
                 buf,
-                "[{}] [{}] {}",
+                "[{} {:>5}] {}",
                 formatted,
                 record.level(),
                 record.args()
             )
         })
+        .write_style(Never)
         .init();
     Ok(())
 }
@@ -111,25 +113,21 @@ fn setup_logging() -> Result<(), MyError> {
 fn main() -> Result<(), MyError> {
     let now = Instant::now();
 
-    // load '.env' file...
-    let where_from = dotenvy::from_filename(MY_ENV)?;
-    println!("Loaded .env from {:?}", where_from);
+    // look for .env in same directory as this executable + load it...
+    let mut env_path = env::current_exe().expect("Failed finding own path");
+    env_path.pop();
+    env_path.push(".env");
+    dotenvy::from_path_override(env_path)?;
 
-    // setup logging...
     setup_logging()?;
-    // say we're ready at all levels..
-    trace!("Ready (trace)...");
-    debug!("Ready (debug)...");
-    info!("Ready (info)...");
-    warn!("Ready (warn)...");
-    error!("Ready (error)...");
 
+    info!("Ready...");
     // the real McCoy...
     if let Err(x) = do_main() {
         error!("{}", x)
     }
 
     let elapsed = now.elapsed();
-    println!("Done in {:.2?}", elapsed);
+    println!("→ Done in {:.2?}", elapsed);
     Ok(())
 }

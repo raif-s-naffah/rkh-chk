@@ -70,8 +70,6 @@ pub fn find_offset(args: Vec<String>) -> Result<usize, MyError> {
 
 /// parse the Scan Section at `offset` and return a collection of file paths
 /// that caused a warning in the log.
-///
-/// Check the README for more details...
 pub fn find_changed_files(offset: usize) -> Result<Vec<String>, MyError> {
     trace!("find_changed_files({})", offset);
     // open + read the log file into memory...
@@ -132,19 +130,17 @@ pub fn find_changed_files(offset: usize) -> Result<Vec<String>, MyError> {
 pub fn find_rpms(files: Vec<String>) -> Result<FindRpmsOutcome, MyError> {
     trace!("find_rpms({:?})", files);
     let mut rpms = HashSet::new();
-    let mut unclaimed_count = 0;
+    let mut unclaimed_files = HashSet::new();
     for file in files {
         match rpm_query(&file) {
-            Ok(RpmQueryOutcome::OwnedBy(x)) => {
-                rpms.insert(x);
-            }
-            Ok(RpmQueryOutcome::NotOwned) => unclaimed_count += 1,
+            Ok(RpmQueryOutcome::OwnedBy(x)) => rpms.insert(x),
+            Ok(RpmQueryOutcome::NotOwned(x)) => unclaimed_files.insert(x),
             Err(x) => return Err(x),
         };
     }
     Ok(FindRpmsOutcome {
         rpms,
-        unclaimed_count,
+        unclaimed_files,
     })
 }
 
@@ -183,7 +179,7 @@ pub fn rpm_query(file: &str) -> Result<RpmQueryOutcome, MyError> {
                 // or a message that the file is NOT owned by any RPM...
                 let line = &x[0];
                 if line.ends_with(UNCLAIMED_MARKER) {
-                    Ok(RpmQueryOutcome::NotOwned)
+                    Ok(RpmQueryOutcome::NotOwned(file.to_owned()))
                 } else {
                     Ok(RpmQueryOutcome::OwnedBy(rpm_name(line)))
                 }
@@ -242,7 +238,7 @@ pub fn rkhunter_update() -> Result<Vec<String>, MyError> {
 /// prompt user and wait for a yes/no answer w/ 'No' being the default.
 pub fn yes_no(prompt: &str) -> bool {
     loop {
-        print!("Q/ {}. Is this ok [y/N]? ", prompt);
+        print!("> {}. Is this ok [y/N]? ", prompt);
         stdout().flush().unwrap();
 
         let mut input = String::new();
@@ -251,7 +247,7 @@ pub fn yes_no(prompt: &str) -> bool {
         match input.trim().to_lowercase().as_str() {
             "y" | "yes" => return true,
             "n" | "no" | "" => return false,
-            _ => println!("A 'y|Y[es]' or 'n|N[o]' answer is expected. Try again..."),
+            _ => println!("> A 'y|Y[es]' or 'n|N[o]' answer is expected. Try again..."),
         }
     }
 }

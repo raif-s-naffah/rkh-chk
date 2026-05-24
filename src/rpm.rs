@@ -2,9 +2,9 @@
 
 //! Artifacts and functions related to the [Red Hat Package Manager (RPM)][1]
 //! used in this tool's context.
-//! 
+//!
 //! [1]: https://en.wikipedia.org/wiki/RPM_Package_Manager
-//! 
+//!
 
 use std::collections::HashSet;
 
@@ -19,18 +19,17 @@ pub enum RpmQueryOutcome {
     /// Variant representing the fact that a designated changed file was found
     /// not to have an installed RPM known to provide it, according to the
     /// `rkhunter` database.
-    NotOwned,
+    NotOwned(String),
 }
 
 /// When one or more _changed files_ were found in the designated _Scan Section_,
 /// we try finding which RPM owns them.  this is the result of that investigation.
 #[derive(Debug)]
 pub struct FindRpmsOutcome {
-    /// set of RPM full names claiming to own one or more _changed files_.
+    /// Set of RPM full names claiming to own one or more _changed files_.
     pub rpms: HashSet<String>,
-    /// number of times a _changed file_ was found NOT to be owned by any
-    /// installed RPM.
-    pub unclaimed_count: usize,
+    /// Set of _changed files_ NOT owned by any installed RPM.
+    pub unclaimed_files: HashSet<String>,
 }
 
 /// RPM package naming syntax: name-version-release.arch.  assuming 'version'

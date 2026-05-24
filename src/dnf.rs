@@ -22,7 +22,7 @@ pub struct DnfHistory {
     pub transaction_id: usize,
     /// The description which usually is the invoked command proper.
     pub description: String,
-    /// Humand readable transaction start time but represented in either
+    /// Human readable transaction start time but represented in either
     /// system's timezone, or if unknown, user-preferred one if provided.
     /// Otherwise it's in UTC.
     pub begin_time: Zoned,

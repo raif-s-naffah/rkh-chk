@@ -65,19 +65,17 @@
 //! How can you configure it?
 //! ==
 //! Make a copy of `.env.template`, rename it to `.env`, edit it to change the values to your liking,
-//! and **place it in `/etc` directory**.
-//! 
-//! This is so the tool can load your configuration preferences and apply them.  If you're interested
-//! in knowing more about how, when, and where from, the environment variables are loaded consult
+//! and place it in the same directory where you'll be calling the binary from. If you're interested
+//! in knowing more about how, when, and where from, environment variables are loaded consult
 //! [dotenvy](https://docs.rs/dotenvy/latest/dotenvy/) and
 //! [env-logger](https://docs.rs/env_logger/latest/env_logger/) documentation.
 //! 
-//! The comments in the `.template` copy hopefully provide all the needed information about the
-//! configuration parameters.
+//! The comments in `.env.template`, and [`MyConfig`][1] hopefully provide all the needed information
+//! about the configuration parameters.
 //!
 //!
-//! [1]: https://en.wikipedia.org/wiki/Rkhunter
-//!
+//! [1]: crate::config::MyConfig
+//! 
 
 pub mod config;
 pub mod dnf;

@@ -39,9 +39,23 @@ macro_rules! load_uint_config_param {
 /// environment variables.
 #[derive(Debug)]
 pub struct MyConfig {
+    /// `MAX_OFFSET` - Unsigned decimal integer, less or equal to 10 indicating
+    /// the maximum allowed value for OFFSET. Default is 10.
     pub max_offset: usize,
+
+    /// `MAX_DNF_DEJA_VU` - Unsigned decimal integer, less or equal to 3
+    /// indicating the maximum number of DNF History Info frames we'll fetch
+    /// earlier than the user-provided OFFSET index. Default is 2.
     pub max_dnf_deja_vu: usize,
+
+    /// `DEFAULT_SYSTEM_TZ` - DNF History frames date-times are expressed in
+    /// UTC timezone. The tool tries to display them in the system's one. If
+    /// however it fails to discover that name, it will use this default. If
+    /// it is missing or misconfigured, date-times will be kept in UTC.
     pub timezone: String,
+
+    /// `RUST_LOG` - Log verbosity.  Valid values are: "OFF", "ERROR", "WARN",
+    /// "INFO", "DEBUG", "TRACE". Defaults to "info".
     pub rust_log: String,
 }
 
@@ -71,13 +85,13 @@ impl MyConfig {
                     match TimeZone::get(&x) {
                         Ok(_) => x,
                         Err(y) => {
-                            eprintln!("Failed parsing DEFAULT_SYSTEM_TZ ({}): {}. Use UTC", x, y);
+                            eprintln!("✘ Failed parsing DEFAULT_SYSTEM_TZ ({}): {}. Use UTC", x, y);
                             UTC_TZ_NAME.to_owned()
                         }
                     }
                 }
                 Err(x) => {
-                    eprintln!("Failed loading DEFAULT_SYSTEM_TZ. Use UTC: {}", x);
+                    eprintln!("✘ Failed loading DEFAULT_SYSTEM_TZ. Use UTC: {}", x);
                     UTC_TZ_NAME.to_owned()
                 }
             }
@@ -88,7 +102,7 @@ impl MyConfig {
         let rust_log = match dotenvy::var("RUST_LOG") {
             Ok(x) => x,
             Err(x) => {
-                eprintln!("Failed loading RUST_LOG. Use default: {}", x);
+                eprintln!("✘ Failed loading RUST_LOG. Use default: {}", x);
                 DEFAULT_RUST_LOG.to_owned()
             }
         };
