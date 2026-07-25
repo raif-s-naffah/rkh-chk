@@ -7,13 +7,13 @@ use crate::{
     config::config,
     dnf::DnfHistoryFrames,
     error::MyError,
-    rpm::{FindRpmsOutcome, RpmQueryOutcome, rpm_name},
+    rpm::{rpm_name, FindRpmsOutcome, RpmQueryOutcome},
 };
 use log::{debug, error, info, trace, warn};
 use std::{
     collections::HashSet,
     fs::File,
-    io::{BufRead, BufReader, Write, stdin, stdout},
+    io::{stdin, stdout, BufRead, BufReader, Write},
     process::Command,
 };
 

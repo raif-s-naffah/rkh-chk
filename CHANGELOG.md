@@ -1,3 +1,10 @@
+# Version 0.2.1 (2026-07-25)
+
+* Use Rust 1.97.1.
+* Adjusted spacing when printing DNF frames + events.
+* Corrected + improved documentation.
+* Update dependencies to latest versions.
+
 # Version 0.2.0 (2026-05-24)
 
 * Collect + list unclaimed changed files -> increase minor version.

@@ -24,7 +24,7 @@
 //!
 //! 4. It then queries the RPM database to find which package _"owns"_ that file. It does that by
 //!    invoking `rpm -qf ` using the changed file path as argument.  If an installed RPM _owns_ the
-//!    file, the result will be something line this:
+//!    file, the result will be something like this:
 //!     ```text
 //!     $ rpm -qf /usr/bin/less↵
 //!     less-692-6.fc44.x86_64
@@ -39,7 +39,7 @@
 //!    Those files are not tracked by `rkhunter`.
 //!
 //! 5. At this point, the tool will have gathered the set of _changed RPMs_; i.e. installed RPMs that
-//!    own the _changed files_, and a _count_ of _unclaimed files_.  Since "fixing" _unclaimed files_
+//!    own the _changed files_, as well as the _unclaimed_ ones.  Since "fixing" _unclaimed files_
 //!    can only be done by updating the entire `rkhunter` database, if the _count of unclaimed files_
 //!    is different than zero, the tool will offer the User a yes/no prompt to do that.  If the User
 //!    answers in the affirmative, the tool will invoke `rkhunter --update --propupd` and exits when

@@ -39,11 +39,11 @@ impl fmt::Display for DnfHistory {
         write!(f, "Events:")?;
         write!(
             f,
-            "  Action     RPM                                       Reason               Repository"
+            "  Action     RPM                                           Reason               Repository"
         )?;
         write!(
             f,
-            "  ---------  ----------------------------------------  -------------------  -----------"
+            "  ---------  --------------------------------------------  -------------------  -----------"
         )?;
         for evt in &self.events {
             write!(f, "{}", evt)?
@@ -142,10 +142,10 @@ impl DnfHistory {
             info!("Description: {}", self.description);
             info!("Events:");
             info!(
-                "  Action     RPM                                       Reason               Repository"
+                "  Action     RPM                                           Reason               Repository"
             );
             info!(
-                "  ---------  ----------------------------------------  -------------------  -----------"
+                "  ---------  --------------------------------------------  -------------------  -----------"
             );
             for evt in filtered {
                 info!("  {}", evt)
@@ -226,7 +226,7 @@ impl fmt::Display for DnfEvent {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "{}  { :<40}  {}  {}",
+            "{}  { :<44}  {}  {}",
             self.action, self.rpm, self.reason, self.repository
         )
     }
@@ -431,11 +431,8 @@ impl DnfHistoryFrames {
             ));
         }
         let ndx = format!("last-{}", offset + len);
-        // match run_cmd_strict("dnf", &["history", "info", &ndx]) {
-        match dnf_history_info(&ndx) {
-            Ok(x) => self.frames.push(x),
-            Err(x) => return Err(x),
-        }
+        let x = dnf_history_info(&ndx)?;
+        self.frames.push(x);
         Ok(self)
     }
 
