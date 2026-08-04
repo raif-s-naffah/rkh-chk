@@ -226,7 +226,7 @@ impl fmt::Display for DnfEvent {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "{}  { :<44}  {}  {}",
+            "{}  {: <44.44}  {}  {}",
             self.action, self.rpm, self.reason, self.repository
         )
     }

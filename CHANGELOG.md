@@ -1,3 +1,9 @@
+# Version 0.2.2 (2026-08-05)
+
+* Limit width of printed RPM names truncating them if need be.
+* Be explicit about using space as fill character when formatting.
+* Update dependencies to latest versions.
+
 # Version 0.2.1 (2026-07-25)
 
 * Use Rust 1.97.1.
