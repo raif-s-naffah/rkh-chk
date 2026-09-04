@@ -328,12 +328,17 @@ impl DnfEventBuilder {
     }
 }
 
-/// Enumeration of DNF Actions that appear in a [DnfEvent].
+/// Enumeration of DNF Actions that appear in a [DnfEvent]. More info is
+/// available [here](https://dnf.readthedocs.io/en/latest/command_ref.html#history-command-label).
 #[derive(Clone, Debug)]
 pub enum DnfAction {
+    /// A new package was installed.
     Install,
+    /// A newer version of a package replaced a previously installed one.
     Upgrade,
+    /// A previously installed package was removed.
     Remove,
+    /// A new package was installed replacing an obsolete one.
     Replaced,
 }
 
@@ -368,10 +373,15 @@ impl TryFrom<&str> for DnfAction {
 /// Enumeration of DNF Reasons that appear in a [DnfEvent].
 #[derive(Clone, Debug)]
 pub enum DnfReason {
+    /// A required dependency of another packge.
     Dependency,
+    /// A weak dependency pulled by another package.
     WeakDependency,
+    /// Package installed as part of a group.
     Group,
+    /// Package requested by a user.
     User,
+    /// Package w/ lost or unknown metadata.
     ExternalUser,
 }
 
@@ -458,6 +468,7 @@ impl DnfHistoryFrames {
         result
     }
 
+    /// Output DNF history records pertaining to given list of RPMs.
     pub fn print_details(&self, rpms: &[String]) {
         info!("----- DNF History Info Record(s) -----");
         for frame in &self.frames {

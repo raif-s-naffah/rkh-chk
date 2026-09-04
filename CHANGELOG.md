@@ -1,3 +1,12 @@
+# Version 1.0.0 (2026-09-04)
+
+* Version 1.0.0 release.
+* Use Rust 1.98.1.
+* Include Version string in the output.
+* Ensure all public types and functions are documented.
+* Sort dependencies.
+* Update dependencies to latest versions.
+
 # Version 0.2.2 (2026-08-05)
 
 * Limit width of printed RPM names truncating them if need be.

@@ -111,6 +111,9 @@ fn setup_logging() -> Result<(), MyError> {
 /// wrapper to measure how long this takes and tell us if anything unexpected
 /// happened.
 fn main() -> Result<(), MyError> {
+    // print version string...
+    println!("Version: {}\n", env!("CARGO_PKG_VERSION"));
+
     let now = Instant::now();
 
     // look for .env in same directory as this executable + load it...

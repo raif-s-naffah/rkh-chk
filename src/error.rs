@@ -13,12 +13,19 @@ use std::{
 /// this tool.
 #[derive(Debug)]
 pub enum MyError {
+    /// Logging related error.
     Logging(log::SetLoggerError),
+    /// Configuration related error.
     Config(dotenvy::Error),
+    /// I/O related error.
     IO(io::Error),
+    /// Parsing related error.
     Parse(ParseIntError),
+    /// [jiff] related error. 
     DateTime(jiff::Error),
+    /// Error related to invoking a system command.
     Command((/* cmd */ String, /* stderr */ String)),
+    /// An nexpected error.
     Runtime(String),
 }
 

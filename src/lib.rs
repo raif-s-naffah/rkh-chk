@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
+#![warn(missing_docs)]
+
 //!
 //! # How does it work?
 //! 1. The tool looks for one command line argument to compute an `OFFSET` parameter.  When that

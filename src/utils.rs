@@ -204,6 +204,7 @@ pub fn rpm_query(file: &str) -> Result<RpmQueryOutcome, MyError> {
 pub fn run_cmd_strict(cmd: &str, args: &[&str]) -> Result<Vec<String>, MyError> {
     run_cmd(cmd, args, true)
 }
+/// Similar to the `_strict` version but this one sets the `strict` flag to FALSE.
 pub fn run_cmd_lenient(cmd: &str, args: &[&str]) -> Result<Vec<String>, MyError> {
     run_cmd(cmd, args, false)
 }
