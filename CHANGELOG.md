@@ -1,3 +1,10 @@
+# UNPUBLISHED | Version 1.0.1 (2026-xx-xx)
+
+* Package binary as RPM. Install in `/usr/local/bin`.
+* `.env` file is now expected to be named `rkh-chk.env`.
+* Update README.
+* Update dependencies to latest versions.
+
 # Version 1.0.0 (2026-09-04)
 
 * Version 1.0.0 release.

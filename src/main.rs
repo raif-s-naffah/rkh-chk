@@ -112,14 +112,22 @@ fn setup_logging() -> Result<(), MyError> {
 /// happened.
 fn main() -> Result<(), MyError> {
     // print version string...
-    println!("Version: {}\n", env!("CARGO_PKG_VERSION"));
+    println!("Version: {}", env!("CARGO_PKG_VERSION"));
 
     let now = Instant::now();
 
     // look for .env in same directory as this executable + load it...
-    let mut env_path = env::current_exe().expect("Failed finding own path");
+    let mut env_path = env::current_exe().expect("Failed finding own path :(");
+    let my_name = env_path
+        .file_name()
+        .expect("Failed finding own name :(")
+        .to_str()
+        .expect("Executable name has non UTF8 chars :(");
+    let my_env = format!("{}.env", my_name);
+
     env_path.pop();
-    env_path.push(".env");
+    env_path.push(my_env);
+    println!("Will load .env from {:?}...\n", env_path);
     dotenvy::from_path_override(env_path)?;
 
     setup_logging()?;

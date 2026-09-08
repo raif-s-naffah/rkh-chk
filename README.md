@@ -13,17 +13,22 @@ This tool helps with those tasks.
 
 
 ## Prerequisites
-This software is distributed, for now, in source only.  To build its binary you will need the latest stable Rust.
+Since version 1.0.1, if you're running a GNU/Linux distribution that can handle RPMs, you can download and install a pre-packaged RPM available from this software GitHub repository. If you do, after successful installation, the executable `rkh-chk`, and a `rkh-chk.env.template` configuration file should be available in `/usr/local/bin`. That location being usually part of `$PATH` means the command is immediately available for use from the command line.
 
 This tool may invoke, w/ User's permission &ndash;by answering a yes/no prompt before every call&ndash; the following commands expected to be accessible from the User's `$PATH`:
 
    * `rkhunter` - to update itself and its properties for all or specific RPMs.
    * [`rpm`](https://en.wikipedia.org/wiki/RPM_Package_Manager) - to query which installed RPM owns a file.
    * [`dnf`](https://en.wikipedia.org/wiki/DNF_(software)) - to find history info records pertaining to an RPM.
-   * [`upx`](https://upx.github.io/) (Optional) - to minimize the final size of the binary.
+
+If you're planning on working on the source, then you'll also need:
+
+   * a working Rust toolchain.
+   * [`upx`](https://upx.github.io/) _if_ you want to minimize the final size of the binary.
+   * [`cargo-generate-rpm`](https://crates.io/crates/cargo-generate-rpm) Cargo helper command _if_ you plan on packaging the RPM deliverable yourself using the provided `build-rpm.sh` Bash script. Note that the script assumes your default `rustup` _compilation target_ is a 'linux-gnu' variant.
 
 
-## Building
+## Building (no RPM)
 The `Cargo.toml` file already contains the necessary incantations to minimize the _release_ binary's size &mdash;whether you'll also be using `upx` or not.  Nevertheless, i suggest you read [this](https://github.com/johnthagen/min-sized-rust) and experiment w/ the settings to ensure they best suit your setup.
 
 Assuming you will be using `upx`, and put the resulting executable somewhere accessible from your `$PATH` (for example `~/bin`), then when you're ready do...
@@ -34,16 +39,20 @@ $ rm ~/bin/rkh-chk↵
 $ upx --best --lzma -o ~/bin/rkh-chk target/release/rkh-chk↵
 ```
 
+## Configuring
+A _template_ configuration file named `rkh-chk.env.template` should be present in `/usr/local/bin` if you install this software from its RPM. Otherwise copy the `.env.template` from this project's folder to the same location where you'll also be placing the `rkh-chk` executable. Make a copy of that _template_ and rename it `rkh-chk.env`. Edit it to suit your setup.
+
+
 ## Using
 To use this tool for dealing with the last run of **RKHunter**, do
 
 ```bash
-$ sudo ~/bin/rkh-chk↵
+$ sudo rkh-chk↵
 ```
 If you need to address the penultimate one, do
 
 ```bash
-$ sudo ~/bin/rkh-chk last-1↵
+$ sudo rkh-chk last-1↵
 ```
 etc... Remember though that _changed files_, unless and until addressed, either individually or globally, will keep causing warnings.  In other words, in practice you'll rarely need to address other than the last run.
 

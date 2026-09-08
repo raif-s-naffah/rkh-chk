@@ -1,7 +1,7 @@
 [package]
 name = "rkh-chk"
 authors = ["Raif S. Naffah <raif@mailbox.org>"]
-version = "1.0.0"
+version = "1.0.1"
 edition = "2024"
 description = "Command line companion tool to Rootkit Hunter"
 repository = "https://github.com/raif-s-naffah/rkh-chk"
@@ -19,3 +19,9 @@ log = "0.4.34"
 strip = true # Automatically strip symbols from the binary.
 lto = true   # Enable link-time optimization
 # codegen-units = 1  # Number of parallel codegen units
+
+[package.metadata.generate-rpm]
+assets = [
+    { source = "target/release/rkh-chk", dest = "/usr/local/bin/rkh-chk", mode = "755" },
+    { source = ".env.template", dest = "/usr/local/bin/rkh-chk.env.template", mode = "644", config = true },
+]

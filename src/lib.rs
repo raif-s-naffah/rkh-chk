@@ -66,14 +66,26 @@
 //!
 //! How can you configure it?
 //! ==
-//! Make a copy of `.env.template`, rename it to `.env`, edit it to change the values to your liking,
-//! and place it in the same directory where you'll be calling the binary from. If you're interested
-//! in knowing more about how, when, and where from, environment variables are loaded consult
-//! [dotenvy](https://docs.rs/dotenvy/latest/dotenvy/) and
+//! Make a copy of `.env.template`, rename it to **`rkh-chk.env`**, edit it to change the values
+//! to your liking, and place it in the same directory where you'll be calling the binary from. If
+//! you're interested in knowing more about how, when, and where from, environment variables are
+//! loaded consult [dotenvy](https://docs.rs/dotenvy/latest/dotenvy/) and
 //! [env-logger](https://docs.rs/env_logger/latest/env_logger/) documentation.
 //! 
 //! The comments in `.env.template`, and [`MyConfig`][1] hopefully provide all the needed information
 //! about the configuration parameters.
+//! 
+//! 
+//! Configuring when using the RPM
+//! ==
+//! Starting from version 1.0.1, this software offers a pre-packaged RPM available for download from
+//! its GitHub repository.  Alternatively you can build the RPM yourself using the included script:
+//! `build-rpm.sh`. After installing the RPM, the following two files will be added:
+//! 
+//! * `/usr/local/bin/rkh-chk` - the binary itself.
+//! * `/usr/local/bin/rkh-chk.env.template` - the environment variables template.
+//! 
+//! Copy + rename the `.template` file as described earlier.  
 //!
 //!
 //! [1]: crate::config::MyConfig
