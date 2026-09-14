@@ -7,13 +7,13 @@ use crate::{
     config::config,
     dnf::DnfHistoryFrames,
     error::MyError,
-    rpm::{rpm_name, FindRpmsOutcome, RpmQueryOutcome},
+    rpm::{FindRpmsOutcome, RpmQueryOutcome, rpm_name},
 };
 use log::{debug, error, info, trace, warn};
 use std::{
     collections::HashSet,
     fs::File,
-    io::{stdin, stdout, BufRead, BufReader, Write},
+    io::{BufRead, BufReader, Write, stdin, stdout},
     process::Command,
 };
 
@@ -301,7 +301,8 @@ pub fn find_dnf_history(offset: usize, rpms: &Vec<String>) -> Result<DnfHistoryF
             cache_ndx += 1;
             if cache_ndx > config().max_dnf_deja_vu {
                 warn!(
-                    "MAX_DNF_DEJA_VU reached w/o finding '{}' in past transactions",
+                    "MAX_DNF_DEJA_VU ({}) reached w/o finding '{}' in past transactions",
+                    config().max_dnf_deja_vu,
                     rpm
                 );
                 break;

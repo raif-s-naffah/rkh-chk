@@ -31,27 +31,6 @@ pub struct DnfHistory {
     pub events: Vec<DnfEvent>,
 }
 
-impl fmt::Display for DnfHistory {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Transaction: #{}", self.transaction_id)?;
-        write!(f, "When       : {}", self.begin_time)?;
-        write!(f, "Description: {}", self.description)?;
-        write!(f, "Events:")?;
-        write!(
-            f,
-            "  Action     RPM                                           Reason               Repository"
-        )?;
-        write!(
-            f,
-            "  ---------  --------------------------------------------  -------------------  -----------"
-        )?;
-        for evt in &self.events {
-            write!(f, "{}", evt)?
-        }
-        Ok(())
-    }
-}
-
 impl DnfHistory {
     /// Given the output of a successful `dnf history info xxx` call, this
     /// parses the lines and construct a valid instance.
@@ -127,9 +106,14 @@ impl DnfHistory {
         false
     }
 
-    /// Print general info about this specific DNF History frame, but skip
-    /// events that are not pertaining to the designated RPMs.
-    fn print_details(&self, rpms: &[String]) {
+    /// Output general info about this specific DNF History frame, to adesignated
+    /// writer, skipping events not pertaining to the designated RPMs collection.
+    fn print_details<W: std::fmt::Write>(&self, w: &mut W, rpms: &[String]) -> Result<(), MyError> {
+        const HEADERS: [&str; 2] = [
+            "Action           RPM                                           Reason               Repository",
+            "---------------  --------------------------------------------  -------------------  -----------",
+        ];
+
         // collect DnfEvents that mention any of given RPMs...
         let filtered: Vec<&DnfEvent> = self
             .events
@@ -137,20 +121,18 @@ impl DnfHistory {
             .filter(|x| rpms.iter().any(|y| x.rpm.starts_with(y)))
             .collect();
         if !filtered.is_empty() {
-            info!("Transaction: #{}", self.transaction_id);
-            info!("When       : {}", self.begin_time);
-            info!("Description: {}", self.description);
-            info!("Events:");
-            info!(
-                "  Action     RPM                                           Reason               Repository"
-            );
-            info!(
-                "  ---------  --------------------------------------------  -------------------  -----------"
-            );
+            writeln!(w, "Transaction: #{}", self.transaction_id)?;
+            writeln!(w, "When       : {}", self.begin_time)?;
+            writeln!(w, "Description: {}", self.description)?;
+            writeln!(w, "Events:")?;
+            for x in HEADERS {
+                writeln!(w, "  {}", x)?
+            }
             for evt in filtered {
-                info!("  {}", evt)
+                writeln!(w, "  {}", evt)?
             }
         }
+        Ok(())
     }
 }
 
@@ -336,19 +318,31 @@ pub enum DnfAction {
     Install,
     /// A newer version of a package replaced a previously installed one.
     Upgrade,
+    /// An older version of a package replaced the installed one.
+    Downgrade,
+    /// A package has been reinstalled.
+    Reinstall,
     /// A previously installed package was removed.
     Remove,
+    /// An installed obsolete package was replaced.
+    Obsolete,
     /// A new package was installed replacing an obsolete one.
     Replaced,
+    /// An installed package now has a different installation reason.
+    ReasonChange,
 }
 
 impl fmt::Display for DnfAction {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            DnfAction::Install => write!(f, "{:<9}", "Install"),
-            DnfAction::Upgrade => write!(f, "{:<9}", "Upgrade"),
-            DnfAction::Remove => write!(f, "{:<9}", "Remove"),
-            DnfAction::Replaced => write!(f, "{:<9}", "Replace"),
+            DnfAction::Install => write!(f, "{:<15}", "Install"),
+            DnfAction::Upgrade => write!(f, "{:<15}", "Upgrade"),
+            DnfAction::Downgrade => write!(f, "{:<15}", "Downgrade"),
+            DnfAction::Reinstall => write!(f, "{:<15}", "Reinstall"),
+            DnfAction::Remove => write!(f, "{:<15}", "Remove"),
+            DnfAction::Obsolete => write!(f, "{:<15}", "Obsolete"),
+            DnfAction::Replaced => write!(f, "{:<15}", "Replace"),
+            DnfAction::ReasonChange => write!(f, "{:<15}", "Reason Change"),
         }
     }
 }
@@ -358,10 +352,14 @@ impl TryFrom<&str> for DnfAction {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         match value.trim() {
-            "Install" => Ok(DnfAction::Install),
-            "Upgrade" => Ok(DnfAction::Upgrade),
-            "Remove" => Ok(DnfAction::Remove),
+            "Install" | "Installed" => Ok(DnfAction::Install),
+            "Upgrade" | "Upgraded" => Ok(DnfAction::Upgrade),
+            "Downgrade" | "Downgraded" => Ok(DnfAction::Downgrade),
+            "Reinstall" | "Reinstalled" => Ok(DnfAction::Reinstall),
+            "Remove" | "Removed" => Ok(DnfAction::Remove),
+            "Obsoleting" | "Obsoleted" => Ok(DnfAction::Downgrade),
             "Replaced" => Ok(DnfAction::Replaced),
+            "Reason Change" => Ok(DnfAction::ReasonChange),
             x => {
                 let msg = format!("Unknown DNF Action: {}", x);
                 Err(MyError::Runtime(msg))
@@ -468,13 +466,26 @@ impl DnfHistoryFrames {
         result
     }
 
-    /// Output DNF history records pertaining to given list of RPMs.
-    pub fn print_details(&self, rpms: &[String]) {
-        info!("----- DNF History Info Record(s) -----");
-        for frame in &self.frames {
-            frame.print_details(rpms);
+    /// Output DNF history records pertaining to given list of RPMs if at least
+    /// one (frame) was found mentioning any one of them RPMs.
+    pub fn print_details(&self, rpms: &[String]) -> Result<(), MyError> {
+        // NOTE (rsn) 20260911 - only print if found frames mentioning RPMS of
+        // interest...
+        if !self.frames.is_empty() {
+            let mut frames_out = String::new();
+            for frame in &self.frames {
+                frame.print_details(&mut frames_out, rpms)?;
+            }
+
+            if !frames_out.is_empty() {
+                info!("----- DNF History Info Record(s) -----");
+                for x in frames_out.lines() {
+                    info!("{}", x);
+                }
+                info!("-----")
+            }
         }
-        info!("-----")
+        Ok(())
     }
 }
 

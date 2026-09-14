@@ -64,8 +64,8 @@ fn do_main() -> Result<(), MyError> {
         // for each RPM.  we process all RPMs together to minimize the calls to
         // `dnf history info`.
         let dnf_history = find_dnf_history(offset, &rpms)?;
-        // output details for the RPMs we'reinterested in only...
-        dnf_history.print_details(&rpms);
+        // output details for the RPMs we're interested in only...
+        dnf_history.print_details(&rpms)?;
         // ...then ask if they're ok calling rkhunter --propupd for that RPM
         for rpm in rpms {
             let prompt = format!("Invoke rkhunter update for package '{}'", rpm);

@@ -57,6 +57,22 @@ $ sudo rkh-chk last-1↵
 etc... Remember though that _changed files_, unless and until addressed, either individually or globally, will keep causing warnings.  In other words, in practice you'll rarely need to address other than the last run.
 
 
+## Verifying RPM signature
+Pre-packaged RPM versions of this tool are available for download from this project's repository, under the `/rpms` folder along with their corresponding signature file (the ones w/ the `.minisig` extension). They were signed by me w/ the [`minisign` tool](https://jedisct1.github.io/minisign/) which you can download and install if you wish to verify the integrity of the RPM for yourself.
+
+To verify the signature of an RPM, assuming you already have `minisign` accessible from your `$PATH`, do...
+
+```bash
+$ minisign -Vm /opt/ws-rust/rkh-chk/rpms/rkh-chk-<version>.x86_64.rpm -P 'RWTQ0SsQG3c49e1lB5LD7lOMdwkAIJPxgxaM0DRB2S/s1OL7PXCkBuNA'↵
+
+```
+If the verification was successful, a message like this one is printed to the console...
+```text
+Signature and comment signature verified
+Trusted comment: Que du magnifique
+...
+```
+
 ## ChangeLog
 Changes are tracked [here](CHANGELOG.md).
 

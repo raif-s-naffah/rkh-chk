@@ -3,6 +3,7 @@
 //! Representation of all possible errors that may be raised when using this tool.
 //!
 
+use core::fmt;
 use std::{
     fmt::{Display, Formatter, Result},
     io,
@@ -19,9 +20,11 @@ pub enum MyError {
     Config(dotenvy::Error),
     /// I/O related error.
     IO(io::Error),
+    /// Formatting related error
+    Fmt(fmt::Error),
     /// Parsing related error.
     Parse(ParseIntError),
-    /// [jiff] related error. 
+    /// [jiff] related error.
     DateTime(jiff::Error),
     /// Error related to invoking a system command.
     Command((/* cmd */ String, /* stderr */ String)),
@@ -35,6 +38,7 @@ impl Display for MyError {
             MyError::Logging(x) => write!(f, "Log setup failed: {:?}", x),
             MyError::Config(x) => write!(f, "Load config parameters error: {:?}", x),
             MyError::IO(x) => write!(f, "I/O error: {:?}", x),
+            MyError::Fmt(x) => write!(f, "Format error: {:?}", x),
             MyError::Parse(x) => write!(f, "Parse integer error: {:?}", x),
             MyError::DateTime(x) => write!(f, "Date-time error: {:?}", x),
             MyError::Command(x) => write!(f, "Command (`{}`) failed: {}", x.0, x.1),
@@ -58,6 +62,12 @@ impl From<dotenvy::Error> for MyError {
 impl From<std::io::Error> for MyError {
     fn from(value: std::io::Error) -> Self {
         Self::IO(value)
+    }
+}
+
+impl From<std::fmt::Error> for MyError {
+    fn from(value: std::fmt::Error) -> Self {
+        Self::Fmt(value)
     }
 }
 
