@@ -1,4 +1,4 @@
-# UNPUBLISHED | Version 2.0.0 (2026-xx-xx)
+# Version 2.0.0 (2026-xx-xx)
 
 * Fix issue #2. Install in `/usr/local/bin`.
 * `.env` file is now expected to be named `rkh-chk.env`.
