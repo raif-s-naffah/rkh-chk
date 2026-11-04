@@ -1,4 +1,4 @@
-# Version 2.0.1 (2026-11-04)
+# Version 3.0.0 (2026-11-04)
 
 * Fix issue #3.
 * Use Rust 1.99.1.
