@@ -1,3 +1,9 @@
+# Version 2.0.1 (2026-11-04)
+
+* Fix issue #3.
+* Use Rust 1.99.1.
+* Update dependencies to latest versions.
+
 # Version 2.0.0 (2026-09-22)
 
 * Fix issue #2. Install in `/usr/local/bin`.

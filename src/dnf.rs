@@ -225,6 +225,7 @@ impl TryFrom<&str> for DnfEvent {
         // DNF Reasons can be 2 words...
         let word1 = iter.next().unwrap();
         let reason = match word1 {
+            "Clean" => DnfReason::Clean,
             "Dependency" => DnfReason::Dependency,
             "Group" => DnfReason::Group,
             "User" => DnfReason::User,
@@ -381,6 +382,8 @@ pub enum DnfReason {
     User,
     /// Package w/ lost or unknown metadata.
     ExternalUser,
+    /// Package (was) kept (on the system) but its "reason" has changed.
+    Clean,
 }
 
 impl fmt::Display for DnfReason {
@@ -391,6 +394,7 @@ impl fmt::Display for DnfReason {
             DnfReason::Group => write!(f, "{:<19}", "Group"),
             DnfReason::User => write!(f, "{:<19}", "User"),
             DnfReason::ExternalUser => write!(f, "{:<19}", "External User"),
+            DnfReason::Clean => write!(f, "{:<19}", "Clean"),
         }
     }
 }
@@ -405,6 +409,7 @@ impl TryFrom<&str> for DnfReason {
             "Group" => Ok(Self::Group),
             "User" => Ok(Self::User),
             "External User" => Ok(Self::ExternalUser),
+            "Clean" => Ok(Self::Clean),
             x => {
                 let msg = format!("Unknown DNF Reason: {}", x);
                 Err(MyError::Runtime(msg))
